@@ -30,6 +30,7 @@ img {
 .gallery {
   display: flex;
   flex-wrap: wrap;
+  scroll-behavior: smooth;
 }
 
 .photo-card {
@@ -37,7 +38,10 @@ img {
 
 }
 
+
+
 .info {
+  margin-top: 10px;
   display: flex;
   justify-content: space-between;
 }

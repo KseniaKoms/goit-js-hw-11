@@ -2,43 +2,38 @@ import './css/common.css';
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 import ImagesApi from './js/images-api';
+import './js/scroll';
+import { Notify } from 'notiflix';
 
 const imagesApi = new ImagesApi();
 
 const refs = {
   form: document.querySelector('.search-form'),
   gallery: document.querySelector('.gallery'),
-  loadMoreButton: document.querySelector('.load-more'),
+  sentinel: document.querySelector('#sentinel'),
 };
 
 refs.form.addEventListener('submit', onFormSubmit);
-refs.loadMoreButton.addEventListener('click', onLoadMoreButtonClick)
 
 function onFormSubmit(e) {
   e.preventDefault();
   imagesApi.query = e.currentTarget.elements.searchQuery.value;
   imagesApi.resetPage();
 
-  try {
     imagesApi.fetchImages()
-      .then((images) => {
-      if (!images) {
+      .then(({ totalHits, hits }) => {
+        if (totalHits === 0) {
         clearImagesGallery();
-        return;
-      } else if (images.length === 40) {
-        imagesApi.notificationSuccess();
+        Notify.failure("Sorry, there are no images matching your search query. Please try again.");
+      } else if (hits.length===40) {
         clearImagesGallery();
-        renderImagesCards(images);
-        showLoadMoreButton();
-      } else if (images.length > 0 && images.length < 40) {
-        hideLoadMoreButton();
-        renderImagesCards(images);
-      }
+        renderImagesCards(hits);
+        imagesApi.incrementPage();
+        Notify.success(`Hooray! We found ${totalHits} images.`);
+        }      
     } 
-    )
-  } catch (error) {
-    console.log(error.name)
-  }
+  )
+
 };
 
 function renderImagesCards(images) {
@@ -74,31 +69,34 @@ function renderImagesCards(images) {
 function simpleLightbox() {
   let gallery = new SimpleLightbox('.gallery a', {captionsData: 'alt'});
   gallery.on('show.simplelightbox');
-  // gallery.refresh();
+  gallery.refresh();
 };
 
 function clearImagesGallery() {
   refs.gallery.innerHTML = '';
 };
 
-function onLoadMoreButtonClick() {
-  imagesApi.fetchImages().then(images => {
-    renderImagesCards(images);
-      if (images.length > 0 && images.length < 40) {
-        imagesApi.notificationInfo();
-        renderImagesCards(images);
-        hideLoadMoreButton();
-      }
+
+
+const onEntry = entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && imagesApi.query !== '') {
+      imagesApi.fetchImages().then(({ hits }) => {
+        if (hits.length === 0) {
+          Notify.info("We're sorry, but you've reached the end of search results.")
+        }
+        renderImagesCards(hits);
+        imagesApi.incrementPage();
+      })
+    }
   });
-}
+};
 
-function showLoadMoreButton() {
-  refs.loadMoreButton.classList.remove('load-more--hidden');
-}
+const observer = new IntersectionObserver(onEntry, {
+  rootMargin: '150px',
+});
+observer.observe(refs.sentinel);
 
-function hideLoadMoreButton() {
- refs.loadMoreButton.classList.add('load-more--hidden');
-}
 
 
 

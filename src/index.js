@@ -30,10 +30,10 @@ function onFormSubmit(e) {
         renderImagesCards(hits);
         imagesApi.incrementPage();
         Notify.success(`Hooray! We found ${totalHits} images.`);
-        }      
+        } 
     } 
   )
-
+  
 };
 
 function renderImagesCards(images) {
@@ -61,12 +61,11 @@ function renderImagesCards(images) {
   </div>
 </div></a>`
   }).join('');
- 
   refs.gallery.insertAdjacentHTML('beforeend', imageCard);
   simpleLightbox();
 };
 
-function simpleLightbox() {
+ function simpleLightbox() {
   let gallery = new SimpleLightbox('.gallery a', {captionsData: 'alt'});
   gallery.on('show.simplelightbox');
   gallery.refresh();
@@ -96,6 +95,10 @@ const observer = new IntersectionObserver(onEntry, {
   rootMargin: '150px',
 });
 observer.observe(refs.sentinel);
+
+
+
+
 
 
 

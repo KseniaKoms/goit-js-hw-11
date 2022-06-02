@@ -9,6 +9,10 @@ body {
   color: #2a2a2a;
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
 
 img {
   display: block;
@@ -33,12 +37,12 @@ img {
   scroll-behavior: smooth;
 }
 
-.photo-card {
-  margin: 20px;
 
+.item {
+  border: 1px solid gray;
+    border-radius: 4px;
+    margin: 20px;
 }
-
-
 
 .info {
   margin-top: 10px;
@@ -50,6 +54,7 @@ img {
   display: flex;
   flex-direction: column;
   text-align: center;
+  text-decoration: none;
 }
 
 p {
@@ -61,10 +66,4 @@ p {
   width: 300px;
 }
 
-.info {
-  margin: auto 0;
-}
 
-.load-more--hidden {
-  display: none;
-}
